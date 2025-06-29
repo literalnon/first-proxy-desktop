@@ -20,20 +20,29 @@ import net.lightbody.bmp.mitm.tools.DefaultSecurityProviderTool
 import net.lightbody.bmp.mitm.tools.SecurityProviderTool
 import net.lightbody.bmp.proxy.CaptureType
 import org.littleshoot.proxy.HttpFiltersSourceAdapter
+import server.settings.SettingsDataStore
 import java.io.*
 import java.nio.file.Files
 import java.util.stream.Collectors
 
-class FullFeaturedProxy {
+class FullFeaturedProxy(
+    val settingsDataStore: SettingsDataStore
+) {
     //    val requests = remember { mutableStateListOf<HarEntry>() }
     val requests = MutableStateFlow<List<HarEntry>>(listOf())
     private val ioScope = CoroutineScope(Dispatchers.Default)
-    val settings: MutableStateFlow<List<IProxySetting>> = MutableStateFlow(listOf())
+    private var settings: List<IProxySetting> = listOf()
     private val proxy = BrowserMobProxyServer()
 
     suspend fun start(
         port: Int
     ) {
+        ioScope.launch {
+            settingsDataStore.enabledSettingIds.collect { enabledSettingsId ->
+                settings = settingsDataStore.allSettings.value
+                    .filter { enabledSettingsId.contains(it.id) }
+            }
+        }
         //proxyServer.start()
         // 1. Создаем прокси-сервер
 
@@ -147,7 +156,7 @@ class FullFeaturedProxy {
             //}
         }
 
-        settings.value.forEach {
+        settings.forEach {
             proxy.addResponseFilter(it.toResponseFilter())
         }
 
@@ -178,12 +187,12 @@ class FullFeaturedProxy {
     }
 
     fun addActiveSettings(setting: IProxySetting) {
-        ioScope.launch {
-            settings.emit(arrayListOf<IProxySetting>().apply {
-                addAll(settings.value)
-                add(setting)
-            })
-        }
+//        ioScope.launch {
+//            settings.emit(arrayListOf<IProxySetting>().apply {
+//                addAll(settings.value)
+//                add(setting)
+//            })
+//        }
         proxy.addResponseFilter(setting.toResponseFilter())
     }
 

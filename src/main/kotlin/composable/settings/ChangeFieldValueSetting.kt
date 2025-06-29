@@ -15,6 +15,7 @@ import ui.action.AppActions
 fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettingsClick) -> Unit) {
     var changedFieldName by remember { mutableStateOf<String?>(null) }
     var changedFieldValue by remember { mutableStateOf<String>("") }
+    var groupName by remember { mutableStateOf<String>("") }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Замена значения поля")
@@ -39,6 +40,16 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
                 },
                 label = { Text("новое значение поля") },
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextField(
+                value = groupName,
+                onValueChange = {
+                    groupName = it
+                },
+                label = { Text("группа") },
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -54,12 +65,13 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
                 AppActions.SettingsScreen.SaveSettingsClick(
                     settingForChanges = IProxySetting.ChangeFieldValue(
                         changedFieldName = nnChangedFieldName,
-                        changedFieldValue = changedFieldValue
+                        changedFieldValue = changedFieldValue,
+                        groupName = groupName,
                     )
                 )
             )
         }) {
-            Text("Сохранить это дерьмо")
+            Text("Сохранить в список")
         }
 
     }

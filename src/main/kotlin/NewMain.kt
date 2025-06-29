@@ -6,11 +6,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import composable.enableSettingsScreen
 import composable.notStartedScreen
 import composable.requestInfoScreen
 import composable.requestsListsScreen
 import composable.settings.settingsScreen
 import kotlinx.coroutines.*
+import server.FullFeaturedProxy
+import server.settings.SettingsDataStore
 import ui.ActiveScreenState
 import ui.action.AppActions
 import ui.store.ScreenStore
@@ -18,7 +21,14 @@ import ui.store.ScreenStore
 @ExperimentalMaterialApi
 fun main() = application {
     val storeCoroutineScope = CoroutineScope(Dispatchers.Default)
-    val screenStore = ScreenStore(storeCoroutineScope)
+    val settingsDataStore = SettingsDataStore(storeCoroutineScope)
+    val proxyServer = FullFeaturedProxy(settingsDataStore = settingsDataStore)
+
+    val screenStore = ScreenStore(
+        storeCoroutineScope = storeCoroutineScope,
+        settingsDataStore = settingsDataStore,
+        proxyServer = proxyServer
+    )
 
     val screenState = screenStore.screenStateFlow.collectAsState()
 
@@ -33,7 +43,13 @@ fun main() = application {
                     Button(onClick = {
                         screenStore.setAction(AppActions.SideMenuScreen.SettingsClick)
                     }) {
-                        Text("Настройки")
+                        Text("Добавить настройку")
+                    }
+
+                    Button(onClick = {
+                        screenStore.setAction(AppActions.SideMenuScreen.EnableSettingsClick)
+                    }) {
+                        Text("Активировать настройки")
                     }
                 }
 
@@ -94,7 +110,28 @@ fun DrawScreen(
                 onBackClick = {
                     screenStore.setAction(AppActions.SettingsScreen.BackNavigationClick)
                 },
+                onLoadSettingsClick = {
+                    TODO()
+                },
+                onSaveSettingsClick = {
+                    TODO()
+                },
                 coroutineScope = coroutineScope
+            )
+        }
+
+        is ActiveScreenState.LoadSettingsScreen -> {
+            enableSettingsScreen(
+                state = screenState,
+                onSettingsClick = { onSettingsClick ->
+                    screenStore.setAction(onSettingsClick)
+                },
+                onBackClick = {
+                    screenStore.setAction(AppActions.EnableSettingsScreen.BackNavigationClick)
+                },
+                onLoadSettingsClick = {
+                    TODO()
+                },
             )
         }
     }

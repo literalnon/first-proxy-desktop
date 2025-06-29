@@ -4,13 +4,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import server.FullFeaturedProxy
+import server.settings.SettingsDataStore
 import ui.ActiveScreenState
 import ui.action.AppActions
 
 class ScreenStore(
-    private val storeCoroutineScope: CoroutineScope
+    private val storeCoroutineScope: CoroutineScope,
+    private val settingsDataStore: SettingsDataStore,
+    private val proxyServer: FullFeaturedProxy
 ) {
-    private val proxyServer = FullFeaturedProxy()
+
 
     val screenStateFlow: MutableStateFlow<ActiveScreenState> = MutableStateFlow<ActiveScreenState>(
         ActiveScreenState.NotStartedScreen()
@@ -39,6 +42,7 @@ class ScreenStore(
                                 when (screenStateFlow.value) {
                                     is ActiveScreenState.NotStartedScreen,
                                     is ActiveScreenState.SettingsScreen,
+                                    is ActiveScreenState.LoadSettingsScreen,
                                     is ActiveScreenState.RequestInfoScreen -> {
                                     }
 
@@ -53,6 +57,7 @@ class ScreenStore(
                         is ActiveScreenState.RequestsListsScreen -> TODO()
 
                         is ActiveScreenState.SettingsScreen -> TODO()
+                        is ActiveScreenState.LoadSettingsScreen -> TODO()
                     }
                 }
             }
@@ -71,7 +76,11 @@ class ScreenStore(
 
             AppActions.SideMenuScreen.SettingsClick -> {
                 storeCoroutineScope.launch {
-                    screenStateFlow.emit(ActiveScreenState.SettingsScreen(settingsFlow = proxyServer.settings))
+                    screenStateFlow.emit(
+                        ActiveScreenState.SettingsScreen(
+                            settingsFlow = settingsDataStore.allSettings
+                        )
+                    )
                 }
             }
 
@@ -84,7 +93,24 @@ class ScreenStore(
             }
 
             is AppActions.SettingsScreen.SaveSettingsClick -> {
-                proxyServer.addActiveSettings(action.settingForChanges)
+                settingsDataStore.addSettings(action.settingForChanges)
+            }
+
+            AppActions.EnableSettingsScreen.BackNavigationClick -> TODO()
+            AppActions.SettingsScreen.OnLoadSettingsClick -> TODO()
+            is AppActions.EnableSettingsScreen.SettingsClick -> {
+                settingsDataStore.changeEnabledSetting(action.settingForChanges)
+            }
+
+            AppActions.SideMenuScreen.EnableSettingsClick -> {
+                storeCoroutineScope.launch {
+                    screenStateFlow.emit(
+                        ActiveScreenState.LoadSettingsScreen(
+                            allSettingsFlow = settingsDataStore.allSettings,
+                            enableSettingsFlow = settingsDataStore.enabledSettingIds
+                        )
+                    )
+                }
             }
         }
     }

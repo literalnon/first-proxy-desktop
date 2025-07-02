@@ -30,6 +30,14 @@ fun enableSettingsScreen(
             modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             item {
+                Button(onClick = {
+                    onBackClick()
+                }) {
+                    Text("Выйти")
+                }
+            }
+
+            item {
                 Text("Список добавленных настроек")
             }
 

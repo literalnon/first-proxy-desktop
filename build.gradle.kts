@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "com.example"
@@ -21,6 +22,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
 
     implementation("net.lightbody.bmp:browsermob-core:2.1.5")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 compose.desktop {

@@ -11,7 +11,7 @@ class SettingsDataStore(
     val allSettings = MutableStateFlow(arrayListOf<IProxySetting>())
     val enabledSettingIds = MutableStateFlow(arrayListOf<Long>())
 
-    fun addSettings(setting: IProxySetting) {
+    fun addSetting(setting: IProxySetting) {
         storeCoroutineScope.launch {
             allSettings.emit(
                 arrayListOf<IProxySetting>().apply {
@@ -33,6 +33,17 @@ class SettingsDataStore(
                     } else {
                         add(setting.id)
                     }
+                }
+            )
+        }
+    }
+
+    fun loadedSettings(settings: List<IProxySetting>) {
+        storeCoroutineScope.launch {
+            allSettings.emit(
+                arrayListOf<IProxySetting>().apply {
+                    addAll(allSettings.value)
+                    addAll(settings)
                 }
             )
         }

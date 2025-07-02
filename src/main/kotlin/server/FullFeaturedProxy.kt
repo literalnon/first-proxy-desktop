@@ -31,7 +31,8 @@ class FullFeaturedProxy(
     //    val requests = remember { mutableStateListOf<HarEntry>() }
     val requests = MutableStateFlow<List<HarEntry>>(listOf())
     private val ioScope = CoroutineScope(Dispatchers.Default)
-    private var settings: List<IProxySetting> = listOf()
+
+    //private var settings: List<IProxySetting> = listOf()
     private val proxy = BrowserMobProxyServer()
 
     suspend fun start(
@@ -39,10 +40,14 @@ class FullFeaturedProxy(
     ) {
         ioScope.launch {
             settingsDataStore.enabledSettingIds.collect { enabledSettingsId ->
-                settings = settingsDataStore.allSettings.value
+                settingsDataStore.allSettings.value
                     .filter { enabledSettingsId.contains(it.id) }
+                    .forEach {
+                        proxy.addResponseFilter(it.toResponseFilter())
+                    }
             }
         }
+
         //proxyServer.start()
         // 1. Создаем прокси-сервер
 
@@ -142,7 +147,6 @@ class FullFeaturedProxy(
                 //System.out.println("Body: " + contents.getTextContents())
             }
             println("RESPONSE_TEST :: 1 :: ${contents.textContents?.contains("Испания (19)")}")
-            //contents.textContents = contents.textContents
 
             //.replace("Россия", "Лучшая в мире страна")
             println("RESPONSE_TEST :: 2 :: ${contents.textContents?.contains("Испания (19)")}")
@@ -156,9 +160,9 @@ class FullFeaturedProxy(
             //}
         }
 
-        settings.forEach {
-            proxy.addResponseFilter(it.toResponseFilter())
-        }
+//        settings.forEach {
+//            proxy.addResponseFilter(it.toResponseFilter())
+//        }
 
         //sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ca-cert-mitmproxy-ca-cert.pem
         // 5. Запускаем прокси

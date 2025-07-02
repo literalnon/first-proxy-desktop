@@ -30,7 +30,9 @@ sealed interface AppActions {
             val settingForChanges: IProxySetting
         ) : SettingsScreen
 
-        data object OnLoadSettingsClick : SettingsScreen
+        data class OnLoadSettingsClick(
+            val loadedSettings: List<IProxySetting>
+        ) : SettingsScreen
 
         data object BackNavigationClick : SettingsScreen
     }

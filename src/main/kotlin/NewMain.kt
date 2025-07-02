@@ -111,7 +111,7 @@ fun DrawScreen(
                     screenStore.setAction(AppActions.SettingsScreen.BackNavigationClick)
                 },
                 onLoadSettingsClick = {
-                    TODO()
+                    screenStore.setAction(AppActions.SettingsScreen.OnLoadSettingsClick(it))
                 },
                 onSaveSettingsClick = {
                     TODO()

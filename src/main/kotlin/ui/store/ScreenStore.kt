@@ -93,11 +93,21 @@ class ScreenStore(
             }
 
             is AppActions.SettingsScreen.SaveSettingsClick -> {
-                settingsDataStore.addSettings(action.settingForChanges)
+                settingsDataStore.addSetting(action.settingForChanges)
             }
 
-            AppActions.EnableSettingsScreen.BackNavigationClick -> TODO()
-            AppActions.SettingsScreen.OnLoadSettingsClick -> TODO()
+            AppActions.EnableSettingsScreen.BackNavigationClick -> {
+                storeCoroutineScope.launch {
+                    screenStateFlow.emit(
+                        screenStateReplayCache[screenStateReplayCache.size - 2]
+                    )
+                }
+            }
+
+            is AppActions.SettingsScreen.OnLoadSettingsClick -> {
+                settingsDataStore.loadedSettings(action.loadedSettings)
+            }
+
             is AppActions.EnableSettingsScreen.SettingsClick -> {
                 settingsDataStore.changeEnabledSetting(action.settingForChanges)
             }

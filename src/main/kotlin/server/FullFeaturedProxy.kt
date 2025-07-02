@@ -8,9 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
+import kotlinx.serialization.json.internal.decodeStringToJsonTree
 import net.lightbody.bmp.BrowserMobProxyServer
 import net.lightbody.bmp.core.har.Har
 import net.lightbody.bmp.core.har.HarEntry
+import net.lightbody.bmp.filters.RequestFilter
 import net.lightbody.bmp.filters.ResponseFilter
 import net.lightbody.bmp.mitm.CertificateAndKey
 import net.lightbody.bmp.mitm.CertificateAndKeySource
@@ -44,6 +49,7 @@ class FullFeaturedProxy(
                     .filter { enabledSettingsId.contains(it.id) }
                     .forEach {
                         proxy.addResponseFilter(it.toResponseFilter())
+                        proxy.addRequestFilter(it.toRequestFilter())
                     }
             }
         }
@@ -168,14 +174,6 @@ class FullFeaturedProxy(
         // 5. Запускаем прокси
         proxy.start(port)
 
-
-        // После выполнения запросов получить данные
-//        val entries = harFile.log.entries
-//        for (entry in entries) {
-//            println("URL: " + entry.request.url)
-//            println("Status: " + entry.response.status)
-//            println("Body: " + entry.response.content.text)
-//        }
         println("Прокси запущен на http://localhost:${proxy.port}")
 
         // 6. Сохраняем HAR в файл при завершении (Ctrl+C)
@@ -189,17 +187,6 @@ class FullFeaturedProxy(
             }
         })
     }
-
-    fun addActiveSettings(setting: IProxySetting) {
-//        ioScope.launch {
-//            settings.emit(arrayListOf<IProxySetting>().apply {
-//                addAll(settings.value)
-//                add(setting)
-//            })
-//        }
-        proxy.addResponseFilter(setting.toResponseFilter())
-    }
-
 
     private fun consoleExec(path: String) {
         try {
@@ -241,34 +228,39 @@ private fun String.encode(): String {
         .collect(Collectors.joining())
 }
 
+
+private fun IProxySetting.toRequestFilter(): RequestFilter {
+    return RequestFilter { request, contents, messageInfo ->
+        when (this) {
+            is IProxySetting.ChangeDomain -> {
+                request.setUri(request.uri.replace(domainOld, domainNew))
+                null
+            }
+
+            is IProxySetting.ChangeFieldValue,
+            is IProxySetting.ChangeResponse,
+            is IProxySetting.ChangeText -> {
+                null
+            }
+        }
+    }
+}
+
 private fun IProxySetting.toResponseFilter(): ResponseFilter {
     return ResponseFilter { response, contents, messageInfo ->
         when (this) {
             is IProxySetting.ChangeFieldValue -> {
-                if (messageInfo.originalUrl.contains(".js")) {
+                try {
+                    contents.textContents = Json.encodeToString(
+                        Json.decodeFromString<JsonElement>(
+                            contents.textContents
+                        ).changeValueInJsonElement(this)
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
                     return@ResponseFilter
                 }
-
-                val start = "${changedFieldName}\":\""
-                val end = "\","
-
-                val startFieldValueIndex = contents.textContents.indexOf(start) + start.length
-                val endFieldValueIndex = contents.textContents.indexOf(
-                    end,
-                    startIndex = startFieldValueIndex
-                )
-
-                contents.textContents = "${
-                    contents.textContents.subSequence(
-                        0,
-                        startFieldValueIndex
-                    )
-                }${changedFieldValue}${
-                    contents.textContents.subSequence(
-                        endFieldValueIndex,
-                        contents.textContents.length
-                    )
-                }"
             }
 
             is IProxySetting.ChangeResponse -> {
@@ -288,6 +280,33 @@ private fun IProxySetting.toResponseFilter(): ResponseFilter {
                         this.beforeChangedString.encode(), this.afterChangedString
                     )
             }
+
+            is IProxySetting.ChangeDomain -> {
+
+            }
         }
     }
+}
+
+private fun JsonElement.changeValueInJsonElement(setting: IProxySetting.ChangeFieldValue): JsonElement {
+    return when (this) {
+        is JsonArray -> JsonArray(
+            map { it.changeValueInJsonElement(setting) }
+        )
+
+        is JsonObject -> changeValueInJsonObject(setting)
+        else -> this
+    }
+}
+
+private fun JsonObject.changeValueInJsonObject(setting: IProxySetting.ChangeFieldValue): JsonObject {
+    val content = this.mapValues {
+        if (it.key == setting.changedFieldName) {
+            return@mapValues JsonPrimitive(setting.changedFieldValue)
+        }
+
+        return@mapValues it.value.changeValueInJsonElement(setting)
+    }
+
+    return JsonObject(content)
 }

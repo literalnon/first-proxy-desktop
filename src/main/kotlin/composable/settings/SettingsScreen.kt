@@ -1,5 +1,7 @@
 package composable.settings
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,7 +10,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fasterxml.jackson.core.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +27,7 @@ import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 @ExperimentalMaterialApi
 fun settingsScreen(
@@ -34,7 +40,9 @@ fun settingsScreen(
 ) {
     val settings = state.settingsFlow.collectAsState()
 
-    Row {
+    Row(
+        modifier = Modifier.fillMaxSize(),
+    ) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(0.5f)
         ) {
@@ -42,7 +50,7 @@ fun settingsScreen(
                 Button(onClick = {
                     onBackClick()
                 }) {
-                    Text("Выйти")
+                    Text("Назад")
                 }
             }
 
@@ -51,8 +59,9 @@ fun settingsScreen(
                     //onLoadSettingsClick()
                     onLoadSettingsClick(loadFile())
                 }) {
-                    Text("Загрузить настройки")
+                    Text("Загрузить настройки из файла")
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
@@ -61,6 +70,7 @@ fun settingsScreen(
                 }) {
                     Text("Сохранить настройки в файл")
                 }
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
@@ -74,57 +84,118 @@ fun settingsScreen(
             item {
                 changeResponseSettingItem(onSaveClick)
             }
+
+            item {
+                changeDomainSettingItem(onSaveClick)
+            }
         }
 
         Spacer(Modifier.width(8.dp))
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(0.5f)
+            modifier = Modifier.fillMaxWidth()
         ) {
             item {
-                Text("Список добавленных настроек")
+                Text(
+                    "Список добавленных настроек",
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
-            items(settings.value) { setting ->
-                when (setting) {
-                    is IProxySetting.ChangeFieldValue -> {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                            Text("ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}")
+            val settingsMap = settings.value.groupBy { it.groupName }
 
-                            Spacer(modifier = Modifier.height(4.dp))
+            settingsMap.forEach { groupName, settingsList ->
+                stickyHeader {
+                    Text(
+                        groupName,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.LightGray)
+                            .padding(8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
 
-                            Button(onClick = {
+                items(settingsList) { setting ->
+                    when (setting) {
+                        is IProxySetting.ChangeFieldValue -> {
 
-                            }) {
-                                Text("Удалить")
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                Text(
+                                    "ChangeFieldValue\n" +
+                                            "From ${setting.changedFieldName}\n" +
+                                            "to ${setting.changedFieldValue}",
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {}
+                                ) {
+                                    Text("Удалить")
+                                }
                             }
                         }
-                    }
 
-                    is IProxySetting.ChangeResponse -> {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                            Text("ChangeResponse. From ${setting.url} to ${setting.response}")
+                        is IProxySetting.ChangeResponse -> {
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                Text(
+                                    "ChangeResponse\n" +
+                                            "From ${setting.url}\n" +
+                                            "to ${setting.response}",
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
 
-                            Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
 
-                            Button(onClick = {
-
-                            }) {
-                                Text("Удалить")
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {}
+                                ) {
+                                    Text("Удалить")
+                                }
                             }
                         }
-                    }
 
-                    is IProxySetting.ChangeText -> {
-                        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                            Text("ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}")
+                        is IProxySetting.ChangeText -> {
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                Text(
+                                    "ChangeText\n" +
+                                            "From ${setting.beforeChangedString}\n" +
+                                            "to ${setting.afterChangedString}",
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
 
-                            Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
 
-                            Button(onClick = {
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {}
+                                ) {
+                                    Text("Удалить")
+                                }
+                            }
+                        }
 
-                            }) {
-                                Text("Удалить")
+                        is IProxySetting.ChangeDomain -> {
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                Text(
+                                    "ChangeDomain\n" +
+                                            "domainOld ${setting.domainOld}\n" +
+                                            "domainNew ${setting.domainNew}",
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Button(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onClick = {}
+                                ) {
+                                    Text("Удалить")
+                                }
                             }
                         }
                     }
@@ -232,6 +303,26 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
             )
         }
 
+        IProxySetting.ChangeDomain::class.java.name -> {
+            val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
+            val domainNew = jsonObject["domain_new"]?.jsonPrimitive?.contentOrNull
+            val domainOld = jsonObject["domain_old"]?.jsonPrimitive?.contentOrNull
+
+            if (groupName == null || domainNew == null || domainOld == null) {
+                throw RuntimeException(
+                    "groupName == null ${groupName == null} " +
+                            "changedFieldName == null ${domainNew == null} " +
+                            "changedFieldValue == null ${domainOld == null}"
+                )
+            }
+
+            IProxySetting.ChangeDomain(
+                groupName = groupName,
+                domainNew = domainNew,
+                domainOld = domainOld,
+            )
+        }
+
         else -> throw RuntimeException("settings_name is not IProxySetting")
     }
 }
@@ -266,6 +357,17 @@ fun encodeIProxySettingToJsonObject(settings: IProxySetting): JsonObject = when 
         content["group_name"] = JsonPrimitive(settings.groupName)
         content["changed_field_name"] = JsonPrimitive(settings.changedFieldName)
         content["changed_field_value"] = JsonPrimitive(settings.changedFieldValue)
+
+        JsonObject(content)
+    }
+
+    is IProxySetting.ChangeDomain -> {
+        val content = HashMap<String, JsonElement>()
+
+        content["settings_name"] = JsonPrimitive(IProxySetting.ChangeDomain::class.java.name)
+        content["group_name"] = JsonPrimitive(settings.groupName)
+        content["domain_new"] = JsonPrimitive(settings.domainNew)
+        content["domain_old"] = JsonPrimitive(settings.domainOld)
 
         JsonObject(content)
     }

@@ -49,7 +49,7 @@ fun enableSettingsScreen(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(0.5f)
+            modifier = Modifier.fillMaxWidth()
         ) {
             item {
                 Text("Список включенных настроек")
@@ -132,6 +132,38 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
             is IProxySetting.ChangeText -> {
                 Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
                     Text("ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}")
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Button(onClick = {
+
+                    }) {
+                        Text("Удалить")
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Button(onClick = {
+                        onSettingsClick(AppActions.EnableSettingsScreen.SettingsClick(setting))
+                    }) {
+                        Text(
+                            if (enabledSettingIds.contains(setting.id)) {
+                                "Выключить"
+                            } else {
+                                "Включить"
+                            }
+                        )
+                    }
+                }
+            }
+
+            is IProxySetting.ChangeDomain -> {
+                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+                    Text(
+                        "ChangeDomain.\n" +
+                                "domainNew ${setting.domainNew}\n" +
+                                "domainOld ${setting.domainOld}"
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 

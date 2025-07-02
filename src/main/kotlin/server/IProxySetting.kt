@@ -9,23 +9,30 @@ sealed interface IProxySetting {
     val groupName: String
 
     data class ChangeFieldValue(
-        override val id: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
+        override val id: Long = LocalDateTime.now().nano.toLong(),
         override val groupName: String,
         val changedFieldName: String,
         val changedFieldValue: String,
     ): IProxySetting
 
     data class ChangeText(
-        override val id: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
+        override val id: Long = LocalDateTime.now().nano.toLong(),
         override val groupName: String,
         val beforeChangedString: String,
         val afterChangedString: String,
     ): IProxySetting
 
     data class ChangeResponse(
-        override val id: Long = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
+        override val id: Long = LocalDateTime.now().nano.toLong(),
         override val groupName: String,
         val url: String,
         val response: String,
+    ): IProxySetting
+
+    data class ChangeDomain(
+        override val id: Long = LocalDateTime.now().nano.toLong(),
+        override val groupName: String,
+        val domainOld: String,
+        val domainNew: String,
     ): IProxySetting
 }

@@ -8,12 +8,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import composable.settings.changeFieldValueSettingItem
-import composable.settings.changeResponseSettingItem
-import composable.settings.changeTextSettingItem
 import server.IProxySetting
-import ui.ActiveScreenState
-import ui.action.AppActions
+import store.ActiveScreenState
+import store.action.AppActions
 
 @Composable
 fun enableSettingsScreen(
@@ -29,14 +26,6 @@ fun enableSettingsScreen(
         LazyColumn(
             modifier = Modifier.fillMaxWidth(0.5f)
         ) {
-            item {
-                Button(onClick = {
-                    onBackClick()
-                }) {
-                    Text("Выйти")
-                }
-            }
-
             item {
                 Text("Список добавленных настроек")
             }

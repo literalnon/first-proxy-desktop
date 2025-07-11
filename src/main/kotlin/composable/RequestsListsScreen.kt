@@ -2,18 +2,14 @@ package composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.lightbody.bmp.core.har.HarEntry
-import ui.ActiveScreenState
+import store.ActiveScreenState
 
 @Composable
 @androidx.compose.material.ExperimentalMaterialApi

@@ -1,17 +1,12 @@
 package server
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import io.netty.handler.codec.http.HttpHeaders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
-import kotlinx.serialization.json.internal.decodeStringToJsonTree
 import net.lightbody.bmp.BrowserMobProxyServer
 import net.lightbody.bmp.core.har.Har
 import net.lightbody.bmp.core.har.HarEntry
@@ -39,6 +34,9 @@ class FullFeaturedProxy(
 
     //private var settings: List<IProxySetting> = listOf()
     private val proxy = BrowserMobProxyServer()
+    var certPath: String = ""
+
+    fun isStarted(): Boolean = proxy.isStarted
 
     suspend fun start(
         port: Int
@@ -100,6 +98,7 @@ class FullFeaturedProxy(
 
         println("Cert Path : ${certFile.absolutePath} ::: ${certFile.canonicalPath}")
 
+
         // Настройка MitM с этим сертификатом
         proxy.setMitmManager(
             ImpersonatingMitmManager.builder()
@@ -113,6 +112,9 @@ class FullFeaturedProxy(
         //proxy.setAlpnEnabled(true);
 
         println("CA-сертификат сохранён в: " + certFile.absolutePath)
+
+        certPath = certFile.absolutePath
+
         //proxy.port = 12346 // Порт прокси
         // 2. Включаем захват всех данных
         proxy.enableHarCaptureTypes(
@@ -148,7 +150,14 @@ class FullFeaturedProxy(
             //if (messageInfo.originalUrl.contains("betcity.ru")) {
             println("\n=== ОТВЕТ === ${messageInfo.originalUrl}")
             System.out.println("Status: " + response.getStatus())
-            System.out.println("Headers: " + response.headers())
+            response.headers().forEach { header ->
+                System.out.println("Headers: " + header)
+            }
+
+            response.headers().add(
+                HttpHeaders.EMPTY_HEADERS.add("Strict-Transport-Security", "max-age=31536000")
+            )
+
             if (contents != null && contents.getTextContents() != null) {
                 //System.out.println("Body: " + contents.getTextContents())
             }
@@ -163,6 +172,8 @@ class FullFeaturedProxy(
             ioScope.launch {
                 requests.emit(proxy.har.log.entries.filter { it.request.url.contains("betcity.ru") })
             }
+
+
             //}
         }
 
@@ -192,10 +203,12 @@ class FullFeaturedProxy(
         try {
             // Создание процесса с аргументами
             //val process = Runtime.getRuntime().exec("sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}")
-            val script = String.format(
-                "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s\" with administrator privileges",
-                "/path/to/cert.pem" // Замените на реальный путь
-            )
+//            val script = String.format(
+//                "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s\" with administrator privileges",
+//                "/path/to/cert.pem" // Замените на реальный путь
+//            )
+
+            val script = "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}\" with administrator privileges"
 
             val cmd = arrayOf("osascript", "-e", script)
 
@@ -213,6 +226,43 @@ class FullFeaturedProxy(
                 }
             }
             val exitCode = process.waitFor()
+            println("Exit Code: $exitCode")
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
+
+
+    private fun consoleExec2(path: String) {
+        try {
+            // Создание процесса с аргументами
+            //val process = Runtime.getRuntime().exec("sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}")
+//            val script = String.format(
+//                "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain %s\" with administrator privileges",
+//                "/path/to/cert.pem" // Замените на реальный путь
+//            )
+//            val command = String.format(
+//                "osascript -e 'do shell script \"security add-trusted-cert -d -k /Library/Keychains/System.keychain %s\" with administrator privileges'",
+//                path
+//            )
+
+            val command = "sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}"
+
+            val process = Runtime.getRuntime().exec(command)
+//            val userKeychain = System.getProperty("user.home") + "/Library/Keychains/login.keychain-db" // macOS Sierra+
+//
+//            val builder = ProcessBuilder(
+//                "security", "add-trusted-cert", "-d",
+//                "-k", userKeychain,  // Используем keychain пользователя
+//                path
+//            )
+//
+//            val process = builder.start()
+            val exitCode = process.waitFor()
+
+            println("userKeychain: $command")
             println("Exit Code: $exitCode")
         } catch (e: IOException) {
             e.printStackTrace()

@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import server.IProxySetting
-import ui.action.AppActions
+import store.action.AppActions
 
 
 @Composable
@@ -17,7 +17,7 @@ fun changeDomainSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettings
     var domainNewString by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена domain")
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -54,7 +54,9 @@ fun changeDomainSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettings
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Button(onClick = {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
             val nnDomainOld = domainOldString
             val nnDomainNew = domainNewString
 

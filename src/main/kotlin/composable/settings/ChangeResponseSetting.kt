@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import server.IProxySetting
-import ui.action.AppActions
+import store.action.AppActions
 
 
 @Composable
@@ -17,7 +17,7 @@ fun changeResponseSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettin
     var response by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена ответа")
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -54,23 +54,25 @@ fun changeResponseSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettin
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Button(onClick = {
-            val nnUrl = url
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val nnUrl = url
 
-            if (nnUrl.isNullOrEmpty()) {
-                return@Button
-            }
+                if (nnUrl.isNullOrEmpty()) {
+                    return@Button
+                }
 
-            onSaveClick(
-                AppActions.SettingsScreen.SaveSettingsClick(
-                    settingForChanges = IProxySetting.ChangeResponse(
-                        url = nnUrl,
-                        response = response,
-                        groupName = groupName
+                onSaveClick(
+                    AppActions.SettingsScreen.SaveSettingsClick(
+                        settingForChanges = IProxySetting.ChangeResponse(
+                            url = nnUrl,
+                            response = response,
+                            groupName = groupName
+                        )
                     )
                 )
-            )
-        }) {
+            }) {
             Text("Сохранить в список")
         }
 

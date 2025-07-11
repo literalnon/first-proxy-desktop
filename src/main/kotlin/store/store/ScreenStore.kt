@@ -1,12 +1,16 @@
-package ui.store
+package store.store
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import server.FullFeaturedProxy
 import server.settings.SettingsDataStore
-import ui.ActiveScreenState
-import ui.action.AppActions
+import store.ActiveScreenState
+import store.action.AppActions
+import java.awt.Desktop
+import java.io.File
+import java.io.IOException
+
 
 class ScreenStore(
     private val storeCoroutineScope: CoroutineScope,
@@ -121,6 +125,36 @@ class ScreenStore(
                         )
                     )
                 }
+            }
+
+            AppActions.SideMenuScreen.MainScreenClick -> {
+                storeCoroutineScope.launch {
+                    screenStateFlow.emit(
+                        if (proxyServer.isStarted()) {
+                            ActiveScreenState.RequestsListsScreen(proxyServer.requests.value)
+                        } else {
+                            ActiveScreenState.NotStartedScreen()
+                        }
+                    )
+                }
+            }
+
+            is AppActions.SettingsScreen.OnRemoveSettingsClick -> {
+                settingsDataStore.removeSetting(action.settingForChanges)
+            }
+
+            AppActions.SideMenuScreen.CertScreenClick -> {
+                if (Desktop.isDesktopSupported()) {
+                    val desktop = Desktop.getDesktop()
+                    try {
+                        desktop.open(File(proxyServer.certPath).parentFile)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    println("Desktop not supported")
+                }
+
             }
         }
     }

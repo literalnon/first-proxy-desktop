@@ -6,8 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ui.ActiveScreenState
-import ui.action.AppActions
+import store.ActiveScreenState
+import store.action.AppActions
 
 @Composable
 fun notStartedScreen(

@@ -14,9 +14,9 @@ import composable.settings.settingsScreen
 import kotlinx.coroutines.*
 import server.FullFeaturedProxy
 import server.settings.SettingsDataStore
-import ui.ActiveScreenState
-import ui.action.AppActions
-import ui.store.ScreenStore
+import store.ActiveScreenState
+import store.action.AppActions
+import store.store.ScreenStore
 
 @ExperimentalMaterialApi
 fun main() = application {
@@ -35,23 +35,7 @@ fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
         AppTheme {
             Row {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.Top,
-                ) {
-                    Button(onClick = {
-                        screenStore.setAction(AppActions.SideMenuScreen.SettingsClick)
-                    }) {
-                        Text("Добавить настройку")
-                    }
-
-                    Button(onClick = {
-                        screenStore.setAction(AppActions.SideMenuScreen.EnableSettingsClick)
-                    }) {
-                        Text("Активировать настройки")
-                    }
-                }
+                sideMenu(screenStore)
 
                 Box(
                     modifier = Modifier.padding(16.dp),
@@ -63,6 +47,54 @@ fun main() = application {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun sideMenu(screenStore: ScreenStore) {
+    Column(
+        modifier = Modifier.fillMaxWidth(0.25f)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                screenStore.setAction(AppActions.SideMenuScreen.MainScreenClick)
+            }) {
+            Text("Главная")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                screenStore.setAction(AppActions.SideMenuScreen.SettingsClick)
+            }) {
+            Text("Добавить настройку")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                screenStore.setAction(AppActions.SideMenuScreen.EnableSettingsClick)
+            }) {
+            Text("Активировать настройки")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                screenStore.setAction(AppActions.SideMenuScreen.CertScreenClick)
+            }) {
+            Text("Сертификат")
         }
     }
 }
@@ -116,7 +148,10 @@ fun DrawScreen(
                 onSaveSettingsClick = {
                     TODO()
                 },
-                coroutineScope = coroutineScope
+                coroutineScope = coroutineScope,
+                onRemoveSettingsClick = {
+                    screenStore.setAction(AppActions.SettingsScreen.OnRemoveSettingsClick(it))
+                }
             )
         }
 

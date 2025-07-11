@@ -1,9 +1,8 @@
-package ui
+package store
 
 import kotlinx.coroutines.flow.StateFlow
 import net.lightbody.bmp.core.har.HarEntry
 import server.IProxySetting
-import java.util.concurrent.Flow
 
 sealed interface ActiveScreenState {
     data class NotStartedScreen(

@@ -8,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import server.IProxySetting
-import ui.action.AppActions
+import store.action.AppActions
 
 
 @Composable
@@ -17,7 +17,7 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
     var changedFieldValue by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена значения поля")
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -54,23 +54,25 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Button(onClick = {
-            val nnChangedFieldName = changedFieldName
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val nnChangedFieldName = changedFieldName
 
-            if (nnChangedFieldName.isNullOrEmpty()) {
-                return@Button
-            }
+                if (nnChangedFieldName.isNullOrEmpty()) {
+                    return@Button
+                }
 
-            onSaveClick(
-                AppActions.SettingsScreen.SaveSettingsClick(
-                    settingForChanges = IProxySetting.ChangeFieldValue(
-                        changedFieldName = nnChangedFieldName,
-                        changedFieldValue = changedFieldValue,
-                        groupName = groupName,
+                onSaveClick(
+                    AppActions.SettingsScreen.SaveSettingsClick(
+                        settingForChanges = IProxySetting.ChangeFieldValue(
+                            changedFieldName = nnChangedFieldName,
+                            changedFieldValue = changedFieldValue,
+                            groupName = groupName,
+                        )
                     )
                 )
-            )
-        }) {
+            }) {
             Text("Сохранить в список")
         }
 

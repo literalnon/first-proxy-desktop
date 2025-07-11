@@ -2,6 +2,7 @@ package composable.settings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,17 +11,17 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.fasterxml.jackson.core.JsonParser
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.json.*
 import server.IProxySetting
-import ui.ActiveScreenState
-import ui.action.AppActions
+import store.ActiveScreenState
+import store.action.AppActions
 import java.io.File
 import java.nio.file.Files
 import javax.swing.JFileChooser
@@ -36,6 +37,7 @@ fun settingsScreen(
     onBackClick: () -> Unit,
     onLoadSettingsClick: (List<IProxySetting>) -> Unit,
     onSaveSettingsClick: () -> Unit,
+    onRemoveSettingsClick: (IProxySetting) -> Unit,
     coroutineScope: CoroutineScope
 ) {
     val settings = state.settingsFlow.collectAsState()
@@ -47,30 +49,23 @@ fun settingsScreen(
             modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             item {
-                Button(onClick = {
-                    onBackClick()
-                }) {
-                    Text("Назад")
-                }
-            }
-
-            item {
-                Button(onClick = {
-                    //onLoadSettingsClick()
-                    onLoadSettingsClick(loadFile())
-                }) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        onLoadSettingsClick(loadFile())
+                    }) {
                     Text("Загрузить настройки из файла")
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
-                Button(onClick = {
-                    saveFileWithSwing(settings.value.map { encodeIProxySettingToJsonObject(it) }.toString())
-                }) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        saveFileWithSwing(settings.value.map { encodeIProxySettingToJsonObject(it) }.toString())
+                    }) {
                     Text("Сохранить настройки в файл")
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
@@ -117,82 +112,93 @@ fun settingsScreen(
                 }
 
                 items(settingsList) { setting ->
-                    when (setting) {
-                        is IProxySetting.ChangeFieldValue -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                    ) {
+                        when (setting) {
+                            is IProxySetting.ChangeFieldValue -> {
 
-                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                                 Text(
                                     "ChangeFieldValue\n" +
                                             "From ${setting.changedFieldName}\n" +
                                             "to ${setting.changedFieldValue}",
                                     modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 14.sp,
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Button(
                                     modifier = Modifier.fillMaxWidth(),
-                                    onClick = {}
+                                    onClick = {
+                                        onRemoveSettingsClick(setting)
+                                    }
                                 ) {
                                     Text("Удалить")
                                 }
                             }
-                        }
 
-                        is IProxySetting.ChangeResponse -> {
-                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                            is IProxySetting.ChangeResponse -> {
+
                                 Text(
                                     "ChangeResponse\n" +
                                             "From ${setting.url}\n" +
                                             "to ${setting.response}",
                                     modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 14.sp,
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Button(
                                     modifier = Modifier.fillMaxWidth(),
-                                    onClick = {}
+                                    onClick = {
+                                        onRemoveSettingsClick(setting)
+                                    }
                                 ) {
                                     Text("Удалить")
                                 }
                             }
-                        }
 
-                        is IProxySetting.ChangeText -> {
-                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                            is IProxySetting.ChangeText -> {
                                 Text(
                                     "ChangeText\n" +
                                             "From ${setting.beforeChangedString}\n" +
                                             "to ${setting.afterChangedString}",
                                     modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 14.sp,
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Button(
                                     modifier = Modifier.fillMaxWidth(),
-                                    onClick = {}
+                                    onClick = {
+                                        onRemoveSettingsClick(setting)
+                                    }
                                 ) {
                                     Text("Удалить")
                                 }
                             }
-                        }
 
-                        is IProxySetting.ChangeDomain -> {
-                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                            is IProxySetting.ChangeDomain -> {
                                 Text(
                                     "ChangeDomain\n" +
                                             "domainOld ${setting.domainOld}\n" +
                                             "domainNew ${setting.domainNew}",
                                     modifier = Modifier.fillMaxWidth(),
+                                    fontSize = 14.sp,
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Button(
                                     modifier = Modifier.fillMaxWidth(),
-                                    onClick = {}
+                                    onClick = {
+                                        onRemoveSettingsClick(setting)
+                                    }
                                 ) {
                                     Text("Удалить")
                                 }

@@ -23,6 +23,22 @@ class SettingsDataStore(
         }
     }
 
+    fun removeSetting(setting: IProxySetting) {
+        storeCoroutineScope.launch {
+            allSettings.emit(
+                arrayListOf<IProxySetting>().apply {
+                    addAll(allSettings.value.filter { it.id != setting.id })
+                }
+            )
+
+            enabledSettingIds.emit(
+                arrayListOf<Long>().apply {
+                    addAll(enabledSettingIds.value.filter { it != setting.id })
+                }
+            )
+        }
+    }
+
     fun changeEnabledSetting(setting: IProxySetting) {
         storeCoroutineScope.launch {
             enabledSettingIds.emit(

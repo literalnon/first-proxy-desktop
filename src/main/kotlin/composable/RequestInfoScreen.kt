@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.lightbody.bmp.core.har.HarEntry
-import ui.ActiveScreenState
+import store.ActiveScreenState
 
 @Composable
 @androidx.compose.material.ExperimentalMaterialApi

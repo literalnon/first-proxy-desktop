@@ -1,4 +1,4 @@
-package ui.action
+package store.action
 
 import net.lightbody.bmp.core.har.HarEntry
 import server.IProxySetting
@@ -23,10 +23,16 @@ sealed interface AppActions {
     sealed interface SideMenuScreen : AppActions {
         data object SettingsClick : NotStartedScreen
         data object EnableSettingsClick : NotStartedScreen
+        data object MainScreenClick : NotStartedScreen
+        data object CertScreenClick : NotStartedScreen
     }
 
     sealed interface SettingsScreen : AppActions {
         data class SaveSettingsClick(
+            val settingForChanges: IProxySetting
+        ) : SettingsScreen
+
+        data class OnRemoveSettingsClick(
             val settingForChanges: IProxySetting
         ) : SettingsScreen
 

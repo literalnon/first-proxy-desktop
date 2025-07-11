@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
     kotlin("plugin.serialization") version "1.9.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.example"
@@ -37,5 +38,12 @@ compose.desktop {
             packageName = "test-compose-desktop"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    manifest {
+        // Optionally, set the main class for the shadowed JAR.
+        attributes["Main-Class"] = "NewMainKt"
     }
 }

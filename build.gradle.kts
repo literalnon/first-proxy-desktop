@@ -24,6 +24,11 @@ dependencies {
 
     implementation("net.lightbody.bmp:browsermob-core:2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    // Netty (SOCKS + HTTP)
+    implementation("io.netty:netty-all:4.1.97.Final")
+
+    // BouncyCastle (для MITM HTTPS)
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 }
 
 compose.desktop {

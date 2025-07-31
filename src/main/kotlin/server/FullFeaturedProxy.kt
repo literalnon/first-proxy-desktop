@@ -103,7 +103,7 @@ class FullFeaturedProxy(
         proxy.setMitmManager(
             ImpersonatingMitmManager.builder()
                 .rootCertificateSource(certSource)
-                //.trustAllServers(true)
+                .trustAllServers(true)
                 .build()
         )
 
@@ -272,7 +272,7 @@ class FullFeaturedProxy(
     }
 }
 
-private fun String.encode(): String {
+fun String.encode(): String {
     return chars()
         .mapToObj { c: Int -> "\\u" + String.format("%04x", c) }
         .collect(Collectors.joining())

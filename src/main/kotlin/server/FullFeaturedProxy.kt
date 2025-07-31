@@ -33,7 +33,12 @@ class FullFeaturedProxy(
     private val ioScope = CoroutineScope(Dispatchers.Default)
 
     //private var settings: List<IProxySetting> = listOf()
-    private val proxy = BrowserMobProxyServer()
+    private val hostResolver = CustomHostResolver()
+
+    private val proxy = BrowserMobProxyServer().apply {
+        hostNameResolver = hostResolver
+    }
+
     var certPath: String = ""
 
     fun isStarted(): Boolean = proxy.isStarted

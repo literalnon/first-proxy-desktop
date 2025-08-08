@@ -150,6 +150,7 @@ fun DrawScreen(
                 },
                 coroutineScope = coroutineScope,
                 onRemoveSettingsClick = {
+                    println("onRemoveSettingsClick newMain")
                     screenStore.setAction(AppActions.SettingsScreen.OnRemoveSettingsClick(it))
                 },
                 onEnableSettingsClick = { onSettingsClick ->

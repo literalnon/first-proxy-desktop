@@ -76,7 +76,9 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
+                        println("onRemoveSettingsClick fillSettings")
 
+                        onRemoveSettingsClick(setting)
                     }) {
                         Text("Удалить")
                     }
@@ -108,7 +110,9 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
+                        println("onRemoveSettingsClick fillSettings")
 
+                        onRemoveSettingsClick(setting)
                     }) {
                         Text("Удалить")
                     }
@@ -139,7 +143,9 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
+                        println("onRemoveSettingsClick fillSettings")
 
+                        onRemoveSettingsClick(setting)
                     }) {
                         Text("Удалить")
                     }
@@ -172,6 +178,8 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
+                        println("onRemoveSettingsClick fillSettings")
+
                         onRemoveSettingsClick(setting)
                     }) {
                         Text("Удалить")
@@ -180,6 +188,7 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
+                        println("onSettingsClick fillSettings")
                         onSettingsClick(setting)
                     }) {
                         Text(

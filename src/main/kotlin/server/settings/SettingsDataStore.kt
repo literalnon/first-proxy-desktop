@@ -24,6 +24,7 @@ class SettingsDataStore(
     }
 
     fun removeSetting(setting: IProxySetting) {
+        println("removeSetting : ${setting.id} :: ${setting.groupName}")
         storeCoroutineScope.launch {
             allSettings.emit(
                 arrayListOf<IProxySetting>().apply {

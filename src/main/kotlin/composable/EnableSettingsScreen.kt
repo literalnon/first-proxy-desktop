@@ -159,24 +159,30 @@ fun fillOneSetting(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Button(onClick = {
-            onRemoveSettingsClick(setting)
-        }) {
-            Text("Удалить")
-        }
+        Row {
+            Button(
+                modifier = Modifier.weight(1f)
+                    .padding(end = 2.dp),
+                onClick = {
+                    onRemoveSettingsClick(setting)
+                }) {
+                Text("Удалить")
+            }
 
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Button(onClick = {
-            onSettingsClick(setting)
-        }) {
-            Text(
-                if (enabledSettingIds.contains(setting.id)) {
-                    "Выключить"
-                } else {
-                    "Включить"
-                }
-            )
+            Button(
+                modifier = Modifier.weight(1f)
+                    .padding(start = 2.dp),
+                onClick = {
+                    onSettingsClick(setting)
+                }) {
+                Text(
+                    if (enabledSettingIds.contains(setting.id)) {
+                        "Выключить"
+                    } else {
+                        "Включить"
+                    }
+                )
+            }
         }
 
     }

@@ -1,6 +1,7 @@
 package server
 
 import io.netty.handler.codec.http.HttpHeaders
+import io.netty.handler.codec.http.HttpResponseStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -324,6 +325,7 @@ private fun IProxySetting.toResponseFilter(): ResponseFilter {
                 }
 
                 contents.textContents = this.response
+                response.status = HttpResponseStatus.OK
             }
 
             is IProxySetting.ChangeText -> {

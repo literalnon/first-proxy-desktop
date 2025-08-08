@@ -16,6 +16,7 @@ fun changeDomainSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettings
     var domainOldString by remember { mutableStateOf<String?>(null) }
     var domainNewString by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
+    var settingName by remember { mutableStateOf<String>("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена domain")
@@ -50,6 +51,16 @@ fun changeDomainSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettings
                 },
                 label = { Text("группа") },
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextField(
+                value = settingName,
+                onValueChange = {
+                    settingName = it
+                },
+                label = { Text("название настройки") },
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -57,23 +68,24 @@ fun changeDomainSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettings
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-            val nnDomainOld = domainOldString
-            val nnDomainNew = domainNewString
+                val nnDomainOld = domainOldString
+                val nnDomainNew = domainNewString
 
-            if (nnDomainOld.isNullOrEmpty() || nnDomainNew.isNullOrEmpty()) {
-                return@Button
-            }
+                if (nnDomainOld.isNullOrEmpty() || nnDomainNew.isNullOrEmpty()) {
+                    return@Button
+                }
 
-            onSaveClick(
-                AppActions.SettingsScreen.SaveSettingsClick(
-                    settingForChanges = IProxySetting.ChangeDomain(
-                        domainOld = nnDomainOld,
-                        domainNew = nnDomainNew,
-                        groupName = groupName
+                onSaveClick(
+                    AppActions.SettingsScreen.SaveSettingsClick(
+                        settingForChanges = IProxySetting.ChangeDomain(
+                            domainOld = nnDomainOld,
+                            domainNew = nnDomainNew,
+                            groupName = groupName,
+                            settingName = settingName,
+                        )
                     )
                 )
-            )
-        }) {
+            }) {
             Text("Сохранить в список")
         }
 

@@ -16,6 +16,7 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
     var changedFieldName by remember { mutableStateOf<String?>(null) }
     var changedFieldValue by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
+    var settingName by remember { mutableStateOf<String>("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена значения поля")
@@ -50,6 +51,16 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
                 },
                 label = { Text("группа") },
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextField(
+                value = settingName,
+                onValueChange = {
+                    settingName = it
+                },
+                label = { Text("название настройки") },
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -69,6 +80,7 @@ fun changeFieldValueSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSett
                             changedFieldName = nnChangedFieldName,
                             changedFieldValue = changedFieldValue,
                             groupName = groupName,
+                            settingName = settingName,
                         )
                     )
                 )

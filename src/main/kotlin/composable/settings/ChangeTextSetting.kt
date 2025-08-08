@@ -16,6 +16,7 @@ fun changeTextSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettingsCl
     var beforeChangedString by remember { mutableStateOf<String?>(null) }
     var afterChangedString by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
+    var settingName by remember { mutableStateOf<String>("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена текста")
@@ -50,6 +51,16 @@ fun changeTextSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettingsCl
                 },
                 label = { Text("группа") },
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextField(
+                value = settingName,
+                onValueChange = {
+                    settingName = it
+                },
+                label = { Text("название настройки") },
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -68,7 +79,8 @@ fun changeTextSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettingsCl
                         settingForChanges = IProxySetting.ChangeText(
                             beforeChangedString = nnBeforeChangedString,
                             afterChangedString = afterChangedString,
-                            groupName = groupName
+                            groupName = groupName,
+                            settingName = settingName,
                         )
                     )
                 )

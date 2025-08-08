@@ -16,6 +16,7 @@ fun changeResponseSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettin
     var url by remember { mutableStateOf<String?>(null) }
     var response by remember { mutableStateOf<String>("") }
     var groupName by remember { mutableStateOf<String>("") }
+    var settingName by remember { mutableStateOf<String>("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text("Замена ответа")
@@ -50,6 +51,16 @@ fun changeResponseSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettin
                 },
                 label = { Text("группа") },
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            TextField(
+                value = settingName,
+                onValueChange = {
+                    settingName = it
+                },
+                label = { Text("название настройки") },
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -68,7 +79,8 @@ fun changeResponseSettingItem(onSaveClick: (AppActions.SettingsScreen.SaveSettin
                         settingForChanges = IProxySetting.ChangeResponse(
                             url = nnUrl,
                             response = response,
-                            groupName = groupName
+                            groupName = groupName,
+                            settingName = settingName,
                         )
                     )
                 )

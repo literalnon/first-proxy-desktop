@@ -258,10 +258,11 @@ fun loadFile(): List<IProxySetting> {
 
 fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
     val name = jsonObject["settings_name"]?.jsonPrimitive?.contentOrNull
+    val settingName = jsonObject["setting_name"]?.jsonPrimitive?.contentOrNull ?: "Без названия"
+    val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
 
     return when (name) {
         IProxySetting.ChangeText::class.java.name -> {
-            val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
             val beforeChangedString = jsonObject["before_changed_string"]?.jsonPrimitive?.contentOrNull
             val afterChangedString = jsonObject["after_changed_string"]?.jsonPrimitive?.contentOrNull
 
@@ -277,11 +278,11 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
                 groupName = groupName,
                 beforeChangedString = beforeChangedString,
                 afterChangedString = afterChangedString,
+                settingName = settingName,
             )
         }
 
         IProxySetting.ChangeResponse::class.java.name -> {
-            val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
             val url = jsonObject["url"]?.jsonPrimitive?.contentOrNull
             val response = jsonObject["response"]?.jsonPrimitive?.contentOrNull
 
@@ -297,11 +298,11 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
                 groupName = groupName,
                 url = url,
                 response = response,
+                settingName = settingName,
             )
         }
 
         IProxySetting.ChangeFieldValue::class.java.name -> {
-            val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
             val changedFieldName = jsonObject["changed_field_name"]?.jsonPrimitive?.contentOrNull
             val changedFieldValue = jsonObject["changed_field_value"]?.jsonPrimitive?.contentOrNull
 
@@ -317,11 +318,11 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
                 groupName = groupName,
                 changedFieldName = changedFieldName,
                 changedFieldValue = changedFieldValue,
+                settingName = settingName,
             )
         }
 
         IProxySetting.ChangeDomain::class.java.name -> {
-            val groupName = jsonObject["group_name"]?.jsonPrimitive?.contentOrNull
             val domainNew = jsonObject["domain_new"]?.jsonPrimitive?.contentOrNull
             val domainOld = jsonObject["domain_old"]?.jsonPrimitive?.contentOrNull
 
@@ -337,6 +338,7 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
                 groupName = groupName,
                 domainNew = domainNew,
                 domainOld = domainOld,
+                settingName = settingName,
             )
         }
 
@@ -344,50 +346,38 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
     }
 }
 
-fun encodeIProxySettingToJsonObject(settings: IProxySetting): JsonObject = when (settings) {
-    is IProxySetting.ChangeText -> {
-        val content = HashMap<String, JsonElement>()
+fun encodeIProxySettingToJsonObject(settings: IProxySetting): JsonObject {
+    val content = HashMap<String, JsonElement>()
+    content["setting_name"] = JsonPrimitive(settings.settingName)
+    content["group_name"] = JsonPrimitive(settings.groupName)
 
-        content["settings_name"] = JsonPrimitive(IProxySetting.ChangeText::class.java.name)
-        content["group_name"] = JsonPrimitive(settings.groupName)
-        content["before_changed_string"] = JsonPrimitive(settings.beforeChangedString)
-        content["after_changed_string"] = JsonPrimitive(settings.afterChangedString)
+    when (settings) {
+        is IProxySetting.ChangeText -> {
+            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeText::class.java.name)
+            content["before_changed_string"] = JsonPrimitive(settings.beforeChangedString)
+            content["after_changed_string"] = JsonPrimitive(settings.afterChangedString)
+        }
 
-        JsonObject(content)
+        is IProxySetting.ChangeResponse -> {
+            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeResponse::class.java.name)
+            content["url"] = JsonPrimitive(settings.url)
+            content["response"] = JsonPrimitive(settings.response)
+        }
+
+        is IProxySetting.ChangeFieldValue -> {
+            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeText::class.java.name)
+            content["changed_field_name"] = JsonPrimitive(settings.changedFieldName)
+            content["changed_field_value"] = JsonPrimitive(settings.changedFieldValue)
+        }
+
+        is IProxySetting.ChangeDomain -> {
+            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeDomain::class.java.name)
+            content["domain_new"] = JsonPrimitive(settings.domainNew)
+            content["domain_old"] = JsonPrimitive(settings.domainOld)
+        }
     }
 
-    is IProxySetting.ChangeResponse -> {
-        val content = HashMap<String, JsonElement>()
-
-        content["settings_name"] = JsonPrimitive(IProxySetting.ChangeResponse::class.java.name)
-        content["group_name"] = JsonPrimitive(settings.groupName)
-        content["url"] = JsonPrimitive(settings.url)
-        content["response"] = JsonPrimitive(settings.response)
-
-        JsonObject(content)
-    }
-
-    is IProxySetting.ChangeFieldValue -> {
-        val content = HashMap<String, JsonElement>()
-
-        content["settings_name"] = JsonPrimitive(IProxySetting.ChangeText::class.java.name)
-        content["group_name"] = JsonPrimitive(settings.groupName)
-        content["changed_field_name"] = JsonPrimitive(settings.changedFieldName)
-        content["changed_field_value"] = JsonPrimitive(settings.changedFieldValue)
-
-        JsonObject(content)
-    }
-
-    is IProxySetting.ChangeDomain -> {
-        val content = HashMap<String, JsonElement>()
-
-        content["settings_name"] = JsonPrimitive(IProxySetting.ChangeDomain::class.java.name)
-        content["group_name"] = JsonPrimitive(settings.groupName)
-        content["domain_new"] = JsonPrimitive(settings.domainNew)
-        content["domain_old"] = JsonPrimitive(settings.domainOld)
-
-        JsonObject(content)
-    }
+    return JsonObject(content)
 }
 
 fun saveFileWithSwing(textForSave: String) {

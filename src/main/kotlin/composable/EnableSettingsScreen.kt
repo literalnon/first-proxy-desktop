@@ -67,140 +67,226 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
     return items(itemsValue) { setting ->
         when (setting) {
             is IProxySetting.ChangeFieldValue -> {
-                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text(
-                        "ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}",
-                        fontSize = 14.sp,
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        println("onRemoveSettingsClick fillSettings")
-
-                        onRemoveSettingsClick(setting)
-                    }) {
-                        Text("Удалить")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        onSettingsClick(setting)
-                    }) {
-                        Text(
-                            if (enabledSettingIds.contains(setting.id)) {
-                                "Выключить"
-                            } else {
-                                "Включить"
-                            }
-                        )
-                    }
-
-                }
+                fillOneSetting(
+                    setting = setting,
+                    settingName = setting.settingName,
+                    settingFeature = "ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}",
+                    onSettingsClick = onSettingsClick,
+                    enabledSettingIds = enabledSettingIds,
+                    onRemoveSettingsClick = onRemoveSettingsClick,
+                )
+//                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+//                    Text(
+//                        setting.settingName,
+//                        fontSize = 14.sp,
+//                    )
+//
+//                    Text(
+//                        "ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}",
+//                        fontSize = 12.sp,
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        println("onRemoveSettingsClick fillSettings")
+//
+//                        onRemoveSettingsClick(setting)
+//                    }) {
+//                        Text("Удалить")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        onSettingsClick(setting)
+//                    }) {
+//                        Text(
+//                            if (enabledSettingIds.contains(setting.id)) {
+//                                "Выключить"
+//                            } else {
+//                                "Включить"
+//                            }
+//                        )
+//                    }
+//
+//                }
             }
 
             is IProxySetting.ChangeResponse -> {
-                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text(
-                        "ChangeResponse. For ${setting.url}",
-                        fontSize = 14.sp,
-                    )
+                fillOneSetting(
+                    setting = setting,
+                    settingName = setting.settingName,
+                    settingFeature = "ChangeResponse. For ${setting.url}",
+                    onSettingsClick = onSettingsClick,
+                    enabledSettingIds = enabledSettingIds,
+                    onRemoveSettingsClick = onRemoveSettingsClick,
+                )
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        println("onRemoveSettingsClick fillSettings")
-
-                        onRemoveSettingsClick(setting)
-                    }) {
-                        Text("Удалить")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        onSettingsClick(setting)
-                    }) {
-                        Text(
-                            if (enabledSettingIds.contains(setting.id)) {
-                                "Выключить"
-                            } else {
-                                "Включить"
-                            }
-                        )
-                    }
-                }
+//                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+//                    Text(
+//                        "ChangeResponse. For ${setting.url}",
+//                        fontSize = 14.sp,
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        println("onRemoveSettingsClick fillSettings")
+//
+//                        onRemoveSettingsClick(setting)
+//                    }) {
+//                        Text("Удалить")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        onSettingsClick(setting)
+//                    }) {
+//                        Text(
+//                            if (enabledSettingIds.contains(setting.id)) {
+//                                "Выключить"
+//                            } else {
+//                                "Включить"
+//                            }
+//                        )
+//                    }
+//                }
             }
 
             is IProxySetting.ChangeText -> {
-                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text(
-                        "ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}",
-                        fontSize = 14.sp,
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        println("onRemoveSettingsClick fillSettings")
-
-                        onRemoveSettingsClick(setting)
-                    }) {
-                        Text("Удалить")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        onSettingsClick(setting)
-                    }) {
-                        Text(
-                            if (enabledSettingIds.contains(setting.id)) {
-                                "Выключить"
-                            } else {
-                                "Включить"
-                            }
-                        )
-                    }
-                }
+                fillOneSetting(
+                    setting = setting,
+                    settingName = setting.settingName,
+                    settingFeature = "ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}",
+                    onSettingsClick = onSettingsClick,
+                    enabledSettingIds = enabledSettingIds,
+                    onRemoveSettingsClick = onRemoveSettingsClick,
+                )
+//                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+//                    Text(
+//                        "ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}",
+//                        fontSize = 14.sp,
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        println("onRemoveSettingsClick fillSettings")
+//
+//                        onRemoveSettingsClick(setting)
+//                    }) {
+//                        Text("Удалить")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        onSettingsClick(setting)
+//                    }) {
+//                        Text(
+//                            if (enabledSettingIds.contains(setting.id)) {
+//                                "Выключить"
+//                            } else {
+//                                "Включить"
+//                            }
+//                        )
+//                    }
+//                }
             }
 
             is IProxySetting.ChangeDomain -> {
-                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text(
-                        "ChangeDomain.\n" +
-                                "domainNew ${setting.domainNew}\n" +
-                                "domainOld ${setting.domainOld}",
-                        fontSize = 14.sp,
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        println("onRemoveSettingsClick fillSettings")
-
-                        onRemoveSettingsClick(setting)
-                    }) {
-                        Text("Удалить")
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Button(onClick = {
-                        println("onSettingsClick fillSettings")
-                        onSettingsClick(setting)
-                    }) {
-                        Text(
-                            if (enabledSettingIds.contains(setting.id)) {
-                                "Выключить"
-                            } else {
-                                "Включить"
-                            }
-                        )
-                    }
-                }
+                fillOneSetting(
+                    setting = setting,
+                    settingName = setting.settingName,
+                    settingFeature = "ChangeDomain.\n" +
+                            "domainNew ${setting.domainNew}\n" +
+                            "domainOld ${setting.domainOld}",
+                    onSettingsClick = onSettingsClick,
+                    enabledSettingIds = enabledSettingIds,
+                    onRemoveSettingsClick = onRemoveSettingsClick,
+                )
+//                Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+//                    Text(
+//                        "ChangeDomain.\n" +
+//                                "domainNew ${setting.domainNew}\n" +
+//                                "domainOld ${setting.domainOld}",
+//                        fontSize = 14.sp,
+//                    )
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        println("onRemoveSettingsClick fillSettings")
+//
+//                        onRemoveSettingsClick(setting)
+//                    }) {
+//                        Text("Удалить")
+//                    }
+//
+//                    Spacer(modifier = Modifier.height(4.dp))
+//
+//                    Button(onClick = {
+//                        println("onSettingsClick fillSettings")
+//                        onSettingsClick(setting)
+//                    }) {
+//                        Text(
+//                            if (enabledSettingIds.contains(setting.id)) {
+//                                "Выключить"
+//                            } else {
+//                                "Включить"
+//                            }
+//                        )
+//                    }
+//                }
             }
         }
+    }
+}
+
+
+@Composable
+fun fillOneSetting(
+    setting: IProxySetting,
+    settingName: String,
+    settingFeature: String,
+    onSettingsClick: (IProxySetting) -> Unit,
+    enabledSettingIds: List<Long>,
+    onRemoveSettingsClick: (IProxySetting) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
+        Text(
+            settingName,
+            fontSize = 14.sp,
+        )
+
+        Text(
+            settingFeature,
+            fontSize = 12.sp,
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Button(onClick = {
+            onRemoveSettingsClick(setting)
+        }) {
+            Text("Удалить")
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Button(onClick = {
+            onSettingsClick(setting)
+        }) {
+            Text(
+                if (enabledSettingIds.contains(setting.id)) {
+                    "Выключить"
+                } else {
+                    "Включить"
+                }
+            )
+        }
+
     }
 }

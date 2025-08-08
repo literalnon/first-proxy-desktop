@@ -29,15 +29,30 @@ import java.util.stream.Collectors
 class FullFeaturedProxy(
     val settingsDataStore: SettingsDataStore
 ) {
-    //    val requests = remember { mutableStateListOf<HarEntry>() }
     val requests = MutableStateFlow<List<HarEntry>>(listOf())
     private val ioScope = CoroutineScope(Dispatchers.Default)
 
-    //private var settings: List<IProxySetting> = listOf()
     private val hostResolver = CustomHostResolver()
 
     private val proxy = BrowserMobProxyServer().apply {
         hostNameResolver = hostResolver
+    }
+
+    private val firstRequestFilter = RequestFilter { request, contents, messageInfo ->
+        request.headers().remove("Proxy-Connection");
+        request.headers().remove("X-Forwarded-For");
+
+        null
+    }
+
+    private val firstResponseFilter = ResponseFilter { response, contents, messageInfo ->
+        response.headers().add(
+            HttpHeaders.EMPTY_HEADERS.add("Strict-Transport-Security", "max-age=31536000")
+        )
+
+        ioScope.launch {
+            requests.emit(proxy.har.log.entries)
+        }
     }
 
     var certPath: String = ""
@@ -49,6 +64,10 @@ class FullFeaturedProxy(
     ) {
         ioScope.launch {
             settingsDataStore.enabledSettingIds.collect { enabledSettingsId ->
+                proxy.filterFactories.clear()
+                proxy.addResponseFilter(firstResponseFilter)
+                proxy.addRequestFilter(firstRequestFilter)
+
                 settingsDataStore.allSettings.value
                     .filter { enabledSettingsId.contains(it.id) }
                     .forEach {
@@ -134,54 +153,9 @@ class FullFeaturedProxy(
         val harFile = proxy.newHar("MyProxyHar")
 
         // 4. Добавляем обработчики для логирования
-        proxy.addRequestFilter { request, contents, messageInfo ->
-            //if (messageInfo.originalUrl.contains("betcity.ru")) {
-            println("\n=== ЗАПРОС === ${messageInfo.originalUrl}")
-            println("URL: " + request.uri)
-            println("Method: " + request.method.name())
-            println("Headers: " + request.headers())
+        proxy.addRequestFilter(firstRequestFilter)
 
-            if (contents?.getTextContents() != null) {
-                println("Body: " + contents.getTextContents())
-            }
-            //}
-
-            request.headers().remove("Proxy-Connection");
-            request.headers().remove("X-Forwarded-For");
-
-            null
-        }
-
-        proxy.addResponseFilter { response, contents, messageInfo ->
-            //if (messageInfo.originalUrl.contains("betcity.ru")) {
-            println("\n=== ОТВЕТ === ${messageInfo.originalUrl}")
-            System.out.println("Status: " + response.getStatus())
-            response.headers().forEach { header ->
-                System.out.println("Headers: " + header)
-            }
-
-            response.headers().add(
-                HttpHeaders.EMPTY_HEADERS.add("Strict-Transport-Security", "max-age=31536000")
-            )
-
-            if (contents != null && contents.getTextContents() != null) {
-                //System.out.println("Body: " + contents.getTextContents())
-            }
-            println("RESPONSE_TEST :: 1 :: ${contents.textContents?.contains("Испания (19)")}")
-
-            //.replace("Россия", "Лучшая в мире страна")
-            println("RESPONSE_TEST :: 2 :: ${contents.textContents?.contains("Испания (19)")}")
-            println("RESPONSE_TEST :: 2.5 :: ${requests.replayCache}")
-            println("RESPONSE_TEST :: 2.5 :: ${requests.replayCache}")
-            println("RESPONSE_TEST :: 3 :: ${proxy.har.log.entries}")
-
-            ioScope.launch {
-                requests.emit(proxy.har.log.entries.filter { it.request.url.contains("betcity.ru") })
-            }
-
-
-            //}
-        }
+        proxy.addResponseFilter(firstResponseFilter)
 
 //        settings.forEach {
 //            proxy.addResponseFilter(it.toResponseFilter())
@@ -214,7 +188,8 @@ class FullFeaturedProxy(
 //                "/path/to/cert.pem" // Замените на реальный путь
 //            )
 
-            val script = "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}\" with administrator privileges"
+            val script =
+                "do shell script \"security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}\" with administrator privileges"
 
             val cmd = arrayOf("osascript", "-e", script)
 

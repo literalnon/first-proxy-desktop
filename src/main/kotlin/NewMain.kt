@@ -151,6 +151,9 @@ fun DrawScreen(
                 coroutineScope = coroutineScope,
                 onRemoveSettingsClick = {
                     screenStore.setAction(AppActions.SettingsScreen.OnRemoveSettingsClick(it))
+                },
+                onEnableSettingsClick = { onSettingsClick ->
+                    screenStore.setAction(AppActions.EnableSettingsScreen.SettingsClick(onSettingsClick))
                 }
             )
         }
@@ -159,14 +162,17 @@ fun DrawScreen(
             enableSettingsScreen(
                 state = screenState,
                 onSettingsClick = { onSettingsClick ->
-                    screenStore.setAction(onSettingsClick)
+                    screenStore.setAction(AppActions.EnableSettingsScreen.SettingsClick(onSettingsClick))
                 },
                 onBackClick = {
                     screenStore.setAction(AppActions.EnableSettingsScreen.BackNavigationClick)
                 },
                 onLoadSettingsClick = {
-                    TODO()
+                    screenStore.setAction(AppActions.SettingsScreen.OnLoadSettingsClick(it))
                 },
+                onRemoveSettingsClick = {
+                    screenStore.setAction(AppActions.SettingsScreen.OnRemoveSettingsClick(it))
+                }
             )
         }
     }

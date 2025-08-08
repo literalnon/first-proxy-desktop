@@ -22,6 +22,7 @@ fun requestInfoScreen(
 @Composable
 @androidx.compose.material.ExperimentalMaterialApi
 fun requestInfo(harEntry: HarEntry, onBackClick: () -> Unit) {
+
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -29,7 +30,7 @@ fun requestInfo(harEntry: HarEntry, onBackClick: () -> Unit) {
             Button(onClick = {
                 onBackClick()
             }) {
-                Text("Сьебаться отсюда")
+                Text("Покинуть")
             }
         }
         item {

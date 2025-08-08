@@ -17,6 +17,8 @@ fun requestsListsScreen(
     state: ActiveScreenState.RequestsListsScreen,
     requestInfoClick: (HarEntry) -> Unit
 ) {
+    Text("Proxy активен")
+
     RequestList(requests = state.requests, {
         requestInfoClick(it)
     })

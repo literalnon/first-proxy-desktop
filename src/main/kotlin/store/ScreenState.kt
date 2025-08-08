@@ -18,7 +18,8 @@ sealed interface ActiveScreenState {
     ) : ActiveScreenState
 
     data class SettingsScreen(
-        val settingsFlow: StateFlow<List<IProxySetting>>
+        val settingsFlow: StateFlow<List<IProxySetting>>,
+        val enableSettingsFlow: StateFlow<List<Long>>,
     ) : ActiveScreenState
 
     data class LoadSettingsScreen(

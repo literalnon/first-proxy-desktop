@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import server.IProxySetting
 import store.ActiveScreenState
 import store.action.AppActions
@@ -15,8 +16,9 @@ import store.action.AppActions
 @Composable
 fun enableSettingsScreen(
     state: ActiveScreenState.LoadSettingsScreen,
-    onSettingsClick: (AppActions.EnableSettingsScreen.SettingsClick) -> Unit,
-    onLoadSettingsClick: () -> Unit,
+    onSettingsClick: (IProxySetting) -> Unit,
+    onLoadSettingsClick: (List<IProxySetting>) -> Unit,
+    onRemoveSettingsClick: (IProxySetting) -> Unit,
     onBackClick: () -> Unit,
 ) {
     val allSettings = state.allSettingsFlow.collectAsState()
@@ -34,6 +36,7 @@ fun enableSettingsScreen(
                 allSettings.value,
                 onSettingsClick = onSettingsClick,
                 enableSettings.value,
+                onRemoveSettingsClick = onRemoveSettingsClick,
             )
         }
 
@@ -48,6 +51,7 @@ fun enableSettingsScreen(
                 allSettings.value.filter { enableSettings.value.contains(it.id) },
                 onSettingsClick = onSettingsClick,
                 enableSettings.value,
+                onRemoveSettingsClick = onRemoveSettingsClick,
             )
         }
     }
@@ -56,14 +60,18 @@ fun enableSettingsScreen(
 
 fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
     itemsValue: List<IProxySetting>,
-    onSettingsClick: (AppActions.EnableSettingsScreen.SettingsClick) -> Unit,
+    onSettingsClick: (IProxySetting) -> Unit,
     enabledSettingIds: List<Long>,
+    onRemoveSettingsClick: (IProxySetting) -> Unit,
 ) {
     return items(itemsValue) { setting ->
         when (setting) {
             is IProxySetting.ChangeFieldValue -> {
                 Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text("ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}")
+                    Text(
+                        "ChangeFieldValue. From ${setting.changedFieldName} to ${setting.changedFieldValue}",
+                        fontSize = 14.sp,
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -76,7 +84,7 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
-                        onSettingsClick(AppActions.EnableSettingsScreen.SettingsClick(setting))
+                        onSettingsClick(setting)
                     }) {
                         Text(
                             if (enabledSettingIds.contains(setting.id)) {
@@ -92,7 +100,10 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
 
             is IProxySetting.ChangeResponse -> {
                 Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text("ChangeResponse. From ${setting.url} to ${setting.response}")
+                    Text(
+                        "ChangeResponse. For ${setting.url}",
+                        fontSize = 14.sp,
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -105,7 +116,7 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
-                        onSettingsClick(AppActions.EnableSettingsScreen.SettingsClick(setting))
+                        onSettingsClick(setting)
                     }) {
                         Text(
                             if (enabledSettingIds.contains(setting.id)) {
@@ -120,7 +131,10 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
 
             is IProxySetting.ChangeText -> {
                 Column(modifier = Modifier.fillMaxSize().padding(4.dp)) {
-                    Text("ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}")
+                    Text(
+                        "ChangeText. From ${setting.beforeChangedString} to ${setting.afterChangedString}",
+                        fontSize = 14.sp,
+                    )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -133,7 +147,7 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
-                        onSettingsClick(AppActions.EnableSettingsScreen.SettingsClick(setting))
+                        onSettingsClick(setting)
                     }) {
                         Text(
                             if (enabledSettingIds.contains(setting.id)) {
@@ -151,13 +165,14 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Text(
                         "ChangeDomain.\n" +
                                 "domainNew ${setting.domainNew}\n" +
-                                "domainOld ${setting.domainOld}"
+                                "domainOld ${setting.domainOld}",
+                        fontSize = 14.sp,
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
-
+                        onRemoveSettingsClick(setting)
                     }) {
                         Text("Удалить")
                     }
@@ -165,7 +180,7 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(onClick = {
-                        onSettingsClick(AppActions.EnableSettingsScreen.SettingsClick(setting))
+                        onSettingsClick(setting)
                     }) {
                         Text(
                             if (enabledSettingIds.contains(setting.id)) {

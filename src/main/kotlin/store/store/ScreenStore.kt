@@ -82,7 +82,8 @@ class ScreenStore(
                 storeCoroutineScope.launch {
                     screenStateFlow.emit(
                         ActiveScreenState.SettingsScreen(
-                            settingsFlow = settingsDataStore.allSettings
+                            settingsFlow = settingsDataStore.allSettings,
+                            enableSettingsFlow = settingsDataStore.enabledSettingIds,
                         )
                     )
                 }

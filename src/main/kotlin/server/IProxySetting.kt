@@ -1,6 +1,7 @@
 package server
 
 import java.time.LocalDateTime
+import kotlin.random.Random
 
 sealed interface IProxySetting {
     val id: Long
@@ -8,7 +9,7 @@ sealed interface IProxySetting {
     val settingName: String
 
     data class ChangeFieldValue(
-        override val id: Long = LocalDateTime.now().nano.toLong(),
+        override val id: Long = LocalDateTime.now().nano.toLong() + Random.nextLong(),
         override val groupName: String,
         override val settingName: String,
         val changedFieldName: String,
@@ -16,7 +17,7 @@ sealed interface IProxySetting {
     ): IProxySetting
 
     data class ChangeText(
-        override val id: Long = LocalDateTime.now().nano.toLong(),
+        override val id: Long = LocalDateTime.now().nano.toLong() + Random.nextLong(),
         override val groupName: String,
         override val settingName: String,
         val beforeChangedString: String,
@@ -24,7 +25,7 @@ sealed interface IProxySetting {
     ): IProxySetting
 
     data class ChangeResponse(
-        override val id: Long = LocalDateTime.now().nano.toLong(),
+        override val id: Long = LocalDateTime.now().nano.toLong() + Random.nextLong(),
         override val groupName: String,
         override val settingName: String,
         val url: String,
@@ -32,7 +33,7 @@ sealed interface IProxySetting {
     ): IProxySetting
 
     data class ChangeDomain(
-        override val id: Long = LocalDateTime.now().nano.toLong(),
+        override val id: Long = LocalDateTime.now().nano.toLong() + Random.nextLong(),
         override val groupName: String,
         override val settingName: String,
         val domainOld: String,

@@ -20,7 +20,11 @@ repositories {
 }
 
 dependencies {
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.linux_x64)
+    implementation(compose.desktop.linux_arm64)
+    implementation(compose.desktop.macos_x64)
+    implementation(compose.desktop.macos_arm64)
+    implementation(compose.desktop.windows_x64)
 
     implementation("net.lightbody.bmp:browsermob-core:2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")

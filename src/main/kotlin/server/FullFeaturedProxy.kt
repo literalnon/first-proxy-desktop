@@ -116,7 +116,7 @@ class FullFeaturedProxy(
                 .build().apply {
                     saveRootCertificateAsPemFile(certFile)
                     savePrivateKeyAsPemFile(certKeyFile, keyPassword)
-                    consoleExec(certFile.absolutePath)
+                    //consoleExec(certFile.absolutePath)
                 }
 
         }

@@ -33,6 +33,7 @@ class FullFeaturedProxy(
     private val ioScope = CoroutineScope(Dispatchers.Default)
 
     private val hostResolver = CustomHostResolver()
+    private val certSourceCreator = CertSourceCreator()
 
     private val proxy = BrowserMobProxyServer().apply {
         hostNameResolver = hostResolver
@@ -42,6 +43,8 @@ class FullFeaturedProxy(
         request.headers().remove("Proxy-Connection");
         request.headers().remove("X-Forwarded-For");
 
+        println("firstRequestFilter : ${request} :: ${contents} :: ${messageInfo}")
+
         null
     }
 
@@ -49,6 +52,8 @@ class FullFeaturedProxy(
         response.headers().add(
             HttpHeaders.EMPTY_HEADERS.add("Strict-Transport-Security", "max-age=31536000")
         )
+
+        println("firstResponseFilter : ${response} :: ${contents} :: ${messageInfo}")
 
         ioScope.launch {
             requests.emit(proxy.har.log.entries)
@@ -94,35 +99,8 @@ class FullFeaturedProxy(
             }
         })
 
-        val certFileName = "proxy-ca-cert.pem"
-        val certKeyFileName = "proxy-ca-key.pem"
-
-        val certFile = File(certFileName)
-        val certKeyFile = File(certKeyFileName)
-        val securityTool: SecurityProviderTool = DefaultSecurityProviderTool()
-        val keyPassword = "456123qwe"
-
-        val certSource: CertificateAndKeySource = if (certFile.exists()) {
-            val certificate = securityTool.decodePemEncodedCertificate(FileReader(certFileName))
-            val privateKey = securityTool.decodePemEncodedPrivateKey(FileReader(certKeyFileName), keyPassword)
-
-            CertificateAndKeySource { CertificateAndKey(certificate, privateKey) }
-        } else {
-            Files.createFile(certFile.toPath())
-            Files.createFile(certKeyFile.toPath())
-
-            RootCertificateGenerator
-                .builder()
-                .build().apply {
-                    saveRootCertificateAsPemFile(certFile)
-                    savePrivateKeyAsPemFile(certKeyFile, keyPassword)
-                    //consoleExec(certFile.absolutePath)
-                }
-
-        }
-
-        println("Cert Path : ${certFile.absolutePath} ::: ${certFile.canonicalPath}")
-
+        val certSource = certSourceCreator.create()
+        certPath = certSourceCreator.getCertPath()
 
         // Настройка MitM с этим сертификатом
         proxy.setMitmManager(
@@ -136,9 +114,6 @@ class FullFeaturedProxy(
         //proxy.setProtocols(Arrays.asList("h2", "http/1.1"));
         //proxy.setAlpnEnabled(true);
 
-        println("CA-сертификат сохранён в: " + certFile.absolutePath)
-
-        certPath = certFile.absolutePath
 
         //proxy.port = 12346 // Порт прокси
         // 2. Включаем захват всех данных

@@ -28,6 +28,11 @@ dependencies {
 
     implementation("net.lightbody.bmp:browsermob-core:2.1.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    
+    // LittleProxy и MITM модуль (как рекомендовано в документации)
+//    implementation("org.littleshoot:littleproxy:1.1.2")
+//    implementation("net.lightbody.bmp:mitm:2.1.4")
+    
     // Netty (SOCKS + HTTP)
     implementation("io.netty:netty-all:4.1.97.Final")
 

@@ -166,12 +166,12 @@ class SocksServerConnectHandler : SimpleChannelInboundHandler<SocksMessage?>() {
                 println("Added HTTP decoders to server pipeline")
                 
                 // 6. Добавляем SimpleMitmServerHandler в пайплайн сервера
-                outboundChannel?.pipeline()?.addLast("simpleMitmServer", SimpleMitmServerHandler(ctx.channel()))
+//                outboundChannel?.pipeline()?.addLast("simpleMitmServer", SimpleMitmServerHandler(ctx.channel()))
                 println("Added SimpleMitmServerHandler to server pipeline")
                 
                 // 7. Заменяем RelayHandler на SimpleMitmHandler
                 ctx.pipeline().remove("relay")
-                ctx.pipeline().addLast("simpleMitm", SimpleMitmHandler(ctx.channel(), outboundChannel!!))
+//                ctx.pipeline().addLast("simpleMitm", SimpleMitmHandler(ctx.channel(), outboundChannel!!))
                 println("Replaced RelayHandler with SimpleMitmHandler")
                 
                 println("MITM pipeline setup completed for $targetHost")

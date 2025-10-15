@@ -299,6 +299,8 @@ private fun IProxySetting.toResponseFilter(): ResponseFilter {
                     return@ResponseFilter
                 }
 
+                println("IProxySetting.ChangeResponse :: ${response} :: ${contents} :: ${messageInfo}")
+
                 contents.textContents = this.response
                 response.status = HttpResponseStatus.OK
             }

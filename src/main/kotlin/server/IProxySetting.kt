@@ -39,4 +39,12 @@ sealed interface IProxySetting {
         val domainOld: String,
         val domainNew: String,
     ): IProxySetting
+
+    data class Sleep(
+        override val id: Long = LocalDateTime.now().nano.toLong() + Random.nextLong(),
+        override val groupName: String,
+        override val settingName: String,
+        val time: Long,
+        val url: String,
+    ): IProxySetting
 }

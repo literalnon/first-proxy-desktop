@@ -273,6 +273,13 @@ private fun IProxySetting.toRequestFilter(): RequestFilter {
             is IProxySetting.ChangeText -> {
                 null
             }
+
+            is IProxySetting.Sleep -> {
+                if (request.uri.contains(url)) {
+                    Thread.sleep(time)
+                }
+                null
+            }
         }
     }
 }
@@ -316,6 +323,10 @@ private fun IProxySetting.toResponseFilter(): ResponseFilter {
             }
 
             is IProxySetting.ChangeDomain -> {
+
+            }
+
+            is IProxySetting.Sleep -> {
 
             }
         }

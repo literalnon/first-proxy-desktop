@@ -131,6 +131,19 @@ fun androidx.compose.foundation.lazy.LazyListScope.fillSettings(
                         onRemoveSettingsClick = onRemoveSettingsClick,
                     )
                 }
+
+                is IProxySetting.Sleep -> {
+                    fillOneSetting(
+                        setting = setting,
+                        settingName = setting.settingName,
+                        settingFeature = "Sleep.\n" +
+                                "time ${setting.time}" +
+                                "url ${setting.url}",
+                        onSettingsClick = onSettingsClick,
+                        enabledSettingIds = enabledSettingIds,
+                        onRemoveSettingsClick = onRemoveSettingsClick,
+                    )
+                }
             }
         }
     }

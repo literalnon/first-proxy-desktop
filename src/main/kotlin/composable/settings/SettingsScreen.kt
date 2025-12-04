@@ -86,6 +86,10 @@ fun settingsScreen(
             item {
                 changeDomainSettingItem(onSaveClick)
             }
+
+            item {
+                sleepSettingItem(onSaveClick)
+            }
         }
 
         Spacer(Modifier.width(8.dp))
@@ -156,7 +160,7 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
 
             if (groupName == null || beforeChangedString == null || afterChangedString == null) {
                 throw RuntimeException(
-                    "groupName == null ${groupName == null} " +
+                    "IProxySetting.ChangeText groupName == null ${groupName == null} " +
                             "beforeChangedString == null ${beforeChangedString == null} " +
                             "afterChangedString ${afterChangedString == null}"
                 )
@@ -230,6 +234,26 @@ fun decodeIProxySettingFromString(jsonObject: JsonObject): IProxySetting {
             )
         }
 
+        IProxySetting.Sleep::class.java.name -> {
+            val time = jsonObject["time"]?.jsonPrimitive?.longOrNull
+            val url = jsonObject["url"]?.jsonPrimitive?.contentOrNull
+
+            if (groupName == null || time == null || url == null) {
+                throw RuntimeException(
+                    "IProxySetting.Sleep groupName == null ${groupName == null} " +
+                            "time == null ${time == null} " +
+                            "url == null ${url == null} "
+                )
+            }
+
+            IProxySetting.Sleep(
+                groupName = groupName,
+                time = time,
+                settingName = settingName,
+                url = url,
+            )
+        }
+
         else -> throw RuntimeException("settings_name is not IProxySetting")
     }
 }
@@ -253,7 +277,7 @@ fun encodeIProxySettingToJsonObject(settings: IProxySetting): JsonObject {
         }
 
         is IProxySetting.ChangeFieldValue -> {
-            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeText::class.java.name)
+            content["settings_name"] = JsonPrimitive(IProxySetting.ChangeFieldValue::class.java.name)
             content["changed_field_name"] = JsonPrimitive(settings.changedFieldName)
             content["changed_field_value"] = JsonPrimitive(settings.changedFieldValue)
         }
@@ -262,6 +286,12 @@ fun encodeIProxySettingToJsonObject(settings: IProxySetting): JsonObject {
             content["settings_name"] = JsonPrimitive(IProxySetting.ChangeDomain::class.java.name)
             content["domain_new"] = JsonPrimitive(settings.domainNew)
             content["domain_old"] = JsonPrimitive(settings.domainOld)
+        }
+
+        is IProxySetting.Sleep -> {
+            content["settings_name"] = JsonPrimitive(IProxySetting.Sleep::class.java.name)
+            content["time"] = JsonPrimitive(settings.time)
+            content["url"] = JsonPrimitive(settings.url)
         }
     }
 

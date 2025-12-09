@@ -1,7 +1,8 @@
 package server
 
-import io.netty.handler.codec.http.HttpHeaders
-import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
+import io.netty.handler.codec.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import net.lightbody.bmp.proxy.CaptureType
 import org.littleshoot.proxy.HttpFiltersSourceAdapter
 import server.settings.SettingsDataStore
 import java.io.*
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.stream.Collectors
 
@@ -268,8 +270,23 @@ private fun IProxySetting.toRequestFilter(): RequestFilter {
                 null
             }
 
+            is IProxySetting.ChangeResponse -> {
+                if (
+                    (request.method != HttpMethod.GET &&
+                            request.method != HttpMethod.POST) ||
+                    !messageInfo.originalUrl.contains(this.url)
+                ) {
+                    return@RequestFilter null
+                }
+
+                return@RequestFilter DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.OK,
+                    Unpooled.copiedBuffer(response, StandardCharsets.UTF_8),
+                )
+            }
+
             is IProxySetting.ChangeFieldValue,
-            is IProxySetting.ChangeResponse,
             is IProxySetting.ChangeText -> {
                 null
             }
